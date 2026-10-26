@@ -1172,3 +1172,64 @@ html:not(.js) .devor-boshqar, html:not(.js) .asbob { display: none; }
 .pastki-ichi { grid-template-columns: minmax(0, 1.2fr) repeat(auto-fit, minmax(150px, 1fr)); }
 @media (max-width: 899px) { .pastki-ichi { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 520px) { .pastki-ichi { grid-template-columns: minmax(0, 1fr); } }
+
+/* =====================================================================
+   Premium segment (26.10): grafit + bronza-oltin. To'q sariq «chegirma» tugmalari yo'q.
+   Moviy rang faqat bo'yalgan devorda (mahsulotning o'z rangi) qoladi.
+   ===================================================================== */
+:root {
+  --qizil: #1C2329;          /* asosiy tugma: grafit */
+  --qizil-2: #000000;
+  --moviy: #8A6A33;          /* urg'u: bronza (och fonda 4.6:1) */
+  --moviy-och: #EDE9E2;      /* tosh-och fon */
+  --oltin: #C9A86E;          /* to'q fonda oltin */
+  --toq: #15191E;            /* to'q bloklar: grafit */
+}
+
+.tugma { box-shadow: 0 8px 20px -12px rgb(21 25 30 / .55); letter-spacing: .01em; }
+.tugma:hover { box-shadow: 0 12px 24px -12px rgb(21 25 30 / .6); }
+/* To'q fondagi asosiy tugma — oltin */
+.hero2 .tugma:not(.tugma-och), .savol-cta .tugma, .foyda .tugma {
+  background: var(--oltin); border-color: var(--oltin); color: #15191E; box-shadow: 0 10px 24px -12px rgb(201 168 110 / .55);
+}
+.hero2 .tugma:not(.tugma-och):hover, .savol-cta .tugma:hover { background: #D8BB86; border-color: #D8BB86; }
+.tugma-kichik { background: var(--qizil); border-color: var(--qizil); }
+
+.hero2 { background: #07090B; }
+.belgi-yurt { color: var(--moviy); font-weight: 600; letter-spacing: .02em; }
+.faktlar li::before { background: var(--oltin); }
+.maslahat-h li::before { background: var(--oltin); }
+.chip input:checked + span { background: var(--siyoh); border-color: var(--siyoh); }
+.tanlash-variant input:checked + span::before { background: var(--oltin); border-color: #fff; }
+
+/* ---------- Premium nimada ---------- */
+.premium-royxat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.premium-royxat li {
+  display: grid; align-content: start; gap: .55rem; padding: 1.4rem 1.4rem 1.5rem; background: #fff;
+  border: 1px solid var(--chiziq); border-top: 3px solid var(--moviy); border-radius: 4px 4px 14px 14px;
+}
+.premium-royxat h3 { font-family: var(--f-sarlavha); font-weight: 600; font-size: 1.12rem; letter-spacing: -.01em; }
+.premium-royxat p { color: var(--matn-2); font-size: .95rem; }
+.premium-royxat a { margin-top: .2rem; font-size: .9rem; font-weight: 600; color: var(--moviy); }
+@media (max-width: 1023px) { .premium-royxat { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .premium-royxat { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Foyda: toʻq grafit blok, oltin raqamlar ---------- */
+.foyda { background: var(--toq); color: #C8CDD2; }
+.foyda h2 { color: #fff; margin-bottom: 0; }
+.foyda .blok-bosh > p { color: #A9B0B7; }
+.foyda-royxat li { background: #1F252B; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .06); }
+.foyda-royxat b { color: var(--oltin); }
+.foyda-qisqa { color: #fff; }
+.foyda-royxat p { color: #A9B0B7; }
+.foyda-royxat a { color: #E4D3B1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    .premium-royxat > li { animation: chiq linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+  }
+}
+
+/* «Premium pardoz» yozuvi telefonda ham koʻrinsin (faqat juda tor ekranda yashirinadi) */
+@media (max-width: 420px) { .belgi-yurt { display: inline; font-size: .72rem; } }
+@media (max-width: 359px) { .belgi-yurt { display: none; } }
