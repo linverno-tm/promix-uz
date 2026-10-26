@@ -10,13 +10,20 @@
   if (video && harakat.matches && !(navigator.connection && navigator.connection.saveData)) {
     const tugma = $('.video-tugma');
     let qolda = false;
-    video.src = matchMedia('(max-width: 899px)').matches ? video.dataset.kichik : video.dataset.katta;
+    const telefon = matchMedia('(max-width: 899px)').matches;
     video.addEventListener('playing', () => video.classList.add('tayyor'), { once: true });
     const oyna = (ijro) => {
       tugma.textContent = ijro ? tugma.dataset.pauza : tugma.dataset.davom;
       tugma.setAttribute('aria-pressed', String(!ijro));
     };
-    video.play().then(() => { tugma.hidden = false; oyna(true); }).catch(() => {});
+    const boshla = () => {
+      if (video.src) return;
+      video.src = telefon ? video.dataset.kichik : video.dataset.katta;
+      video.play().then(() => { tugma.hidden = false; oyna(true); }).catch(() => {});
+    };
+    // telefonda video birinchi teginish/aylantirishda boshlanadi — sahifa tezroq ochiladi (LCP surat boʻlib qoladi)
+    if (telefon) ['pointerdown', 'scroll', 'keydown', 'touchstart'].forEach((h) => addEventListener(h, boshla, { once: true, passive: true }));
+    else boshla();
     tugma.addEventListener('click', () => {
       qolda = !video.paused;
       if (video.paused) video.play(); else video.pause();
@@ -24,7 +31,7 @@
     });
     // koʻrinmay qolsa — protsessorni bekor band qilmaymiz
     new IntersectionObserver(([y]) => {
-      if (qolda) return;
+      if (qolda || !video.src) return;
       if (y.isIntersecting) video.play().catch(() => {}); else video.pause();
     }).observe(video);
   }
@@ -103,7 +110,7 @@
       if (matchMedia('(max-width: 899px)').matches) { tepaEl.classList.remove('tor'); return; }
       tepaEl.classList.remove('tor');
       const sigmaydi = tepaIchi.scrollWidth > tepaIchi.clientWidth + 1
-        || $$('.menu ul a', tepaIchi).some((a) => a.getBoundingClientRect().height > 40);
+        || $$('.menu ul a', tepaIchi).some((a) => a.getClientRects().length > 1);
       tepaEl.classList.toggle('tor', sigmaydi);
     };
     olchash();
@@ -115,10 +122,12 @@
   const menuTugma = $('.menu-tugma');
   const menu = $('#menu');
   if (menuTugma && menu) {
-    const yop = () => { menu.classList.remove('ochiq'); menuTugma.setAttribute('aria-expanded', 'false'); };
+    const yop = () => { menu.classList.remove('ochiq'); menuTugma.setAttribute('aria-expanded', 'false'); document.documentElement.classList.remove('menu-ochiq'); };
     menuTugma.addEventListener('click', () => {
       const ochiq = menu.classList.toggle('ochiq');
       menuTugma.setAttribute('aria-expanded', String(ochiq));
+      // panel butun ekranni egallaydi — orqadagi sahifa aylanmasin
+      document.documentElement.classList.toggle('menu-ochiq', ochiq);
     });
     menu.addEventListener('click', (e) => { if (e.target.closest('a')) yop(); });
     document.addEventListener('keydown', (e) => {
@@ -199,6 +208,23 @@
     } else {
       kesim.classList.add('korindi');
     }
+  }
+
+  // ---- Katalog kartalari: sichqoncha ostida yengil 3D ogʻish (faqat sichqonchali qurilmada) ----
+  if (harakat.matches && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    $$('.karta-havola').forEach((k) => {
+      k.addEventListener('pointermove', (e) => {
+        const r = k.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        k.style.setProperty('--ry', `${(x * 8).toFixed(2)}deg`);
+        k.style.setProperty('--rx', `${(-y * 8).toFixed(2)}deg`);
+        k.style.setProperty('--mx', `${((x + 0.5) * 100).toFixed(1)}%`);
+        k.style.setProperty('--my', `${((y + 0.5) * 100).toFixed(1)}%`);
+        k.classList.add('ogish');
+      });
+      k.addEventListener('pointerleave', () => { k.classList.remove('ogish'); k.style.removeProperty('--rx'); k.style.removeProperty('--ry'); });
+    });
   }
 
   // ---- Katalog filtri (jonli: birinchi harfdan) ----
@@ -348,6 +374,7 @@
       if (havola) {
         window.open(havola, '_blank', 'noopener');
         holat.textContent = forma.dataset.xabarYuborildi;
+        forma.classList.remove('yuborildi'); void forma.offsetWidth; forma.classList.add('yuborildi');
       } else {
         holat.textContent = forma.dataset.xabarUlanmagan;
       }
