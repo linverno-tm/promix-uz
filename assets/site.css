@@ -1233,3 +1233,96 @@ html:not(.js) .devor-boshqar, html:not(.js) .asbob { display: none; }
 /* «Premium pardoz» yozuvi telefonda ham koʻrinsin (faqat juda tor ekranda yashirinadi) */
 @media (max-width: 420px) { .belgi-yurt { display: inline; font-size: .72rem; } }
 @media (max-width: 359px) { .belgi-yurt { display: none; } }
+
+/* =====================================================================
+   Vizual tushuntirish (26.10): «odamlar matn o'qimaydi» — har afzallik jonli tasvir bilan.
+   Harakat faqat .vz.korindi (ko'ringanda) va prefers-reduced-motion: no-preference da.
+   ===================================================================== */
+.vz { display: block; width: 100%; height: auto; }
+
+/* ---------- Premium kartalari ---------- */
+.premium-royxat li { padding: 0; overflow: hidden; gap: 0; border-top: 0; border-radius: 16px; }
+.premium-vz { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #F4F4F1; border-bottom: 1px solid var(--chiziq); }
+.premium-vz > .vz { width: 100%; height: 100%; }
+.premium-royxat h3 { padding: 1rem 1.2rem 0; font-size: 1.08rem; }
+.premium-royxat p { padding: .3rem 1.2rem 1.15rem; font-size: .92rem; }
+.premium-royxat p a { white-space: nowrap; margin-left: .25rem; }
+
+/* Bayroq */
+.bayroq { transform-origin: 67px 30px; }
+.bayroq-burma { transform: translateX(0); }
+/* Mikromarmar */
+.kristallar { transform: translateX(-30px); }
+/* Q4 */
+.nur-tasma { transform: translateX(0); opacity: 0; }
+/* Yuvish: oxirgi holat — toza devor, gubka chetda */
+.dog { opacity: 0; }
+.gubka { transform: translate(250px, 112px); }
+.kopik { opacity: 0; }
+/* Hujjat yelpigʻichi */
+.vz-hujjat { position: relative; height: 100%; display: grid; place-items: center; background: linear-gradient(160deg, #F7F5F0, #ECE8E1); }
+.vz-sert { position: absolute; top: 12%; width: 34%; padding: 0; border: 1px solid var(--chiziq); background: #fff; cursor: zoom-in; box-shadow: 0 12px 24px -12px rgb(21 25 30 / .45); transition: transform .3s; }
+.vz-sert img { width: 100%; height: auto; display: block; }
+.vz-sert-1 { left: 22%; transform: rotate(-8deg); }
+.vz-sert-2 { right: 22%; transform: rotate(7deg); }
+.vz-sert:hover { transform: rotate(0deg) translateY(-6px) scale(1.04); z-index: 2; }
+.vz-chiplar { position: absolute; left: 0; right: 0; bottom: .7rem; display: flex; justify-content: center; flex-wrap: wrap; gap: .35rem; }
+.vz-chiplar li { padding: .2rem .55rem; border-radius: 999px; font-size: .72rem; font-weight: 700; color: #fff; background: rgb(21 25 30 / .82); }
+
+/* ---------- Foyda tasvirlari ---------- */
+.foyda-royxat .vz-f { max-width: 240px; margin-bottom: .6rem; }
+.osish { transform-origin: 80px 0; }
+.katak { opacity: 1; }
+.soat-mil { transform: rotate(0deg); transform-origin: 0 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .vz.korindi .bayroq { animation: hilpira 3.2s ease-in-out infinite; }
+  .js .vz.korindi .bayroq-burma { animation: burma 2.4s linear infinite; }
+  .js .vz.korindi .kristallar { animation: lupa 7s ease-in-out infinite alternate; }
+  .js .vz.korindi .nur-tasma { animation: nur 6s ease-in-out infinite; }
+  .js .vz.korindi .dog { animation: dog 6s ease-in-out infinite; }
+  .js .vz.korindi .gubka { animation: gubka 6s ease-in-out infinite; }
+  .js .vz.korindi .kopik { animation: kopik 6s ease-in-out infinite; }
+  .js .vz.korindi .belgi { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(.2s + var(--i) * .35s); transform-box: fill-box; transform-origin: center; }
+  .js .vz.korindi .belgi-ok { animation: pop .4s cubic-bezier(.3, 1.8, .5, 1) both; animation-delay: calc(.6s + var(--i) * .35s); transform-box: fill-box; transform-origin: center; }
+  .js .vz-hujjat.korindi .vz-sert-1 { animation: yelpigich1 .8s cubic-bezier(.2, .8, .2, 1) both .2s; }
+  .js .vz-hujjat.korindi .vz-sert-2 { animation: yelpigich2 .8s cubic-bezier(.2, .8, .2, 1) both .35s; }
+  .js .vz.korindi .osish { animation: osish 2.4s cubic-bezier(.3, .7, .3, 1) both; }
+  .js .vz.korindi .katak { animation: katak .35s ease-out both; animation-delay: calc(.2s + var(--i) * .11s); }
+  .js .vz.korindi .soat-mil { animation: aylan 3s linear infinite; }
+  .js .vz.korindi .soat-yoy { animation: yoy 3s linear infinite; }
+  .js .vz.korindi .qor { animation: pop .45s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(.2s + var(--i) * .25s); transform-box: fill-box; transform-origin: center; }
+}
+@keyframes hilpira { 0%, 100% { transform: translate(67px, 30px) skewY(0deg) scaleX(1); } 50% { transform: translate(67px, 30px) skewY(-4deg) scaleX(.97); } }
+@keyframes burma { from { transform: translateX(0); } to { transform: translateX(160px); } }
+@keyframes lupa { from { transform: translateX(0); } to { transform: translateX(-70px); } }
+@keyframes nur { 0% { transform: translateX(0); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateX(440px); opacity: 0; } }
+@keyframes dog {
+  0% { opacity: 0; clip-path: inset(0 0 0 0); } 10%, 35% { opacity: 1; clip-path: inset(0 0 0 0); }
+  80% { opacity: 1; clip-path: inset(0 0 0 100%); } 100% { opacity: 0; clip-path: inset(0 0 0 100%); }
+}
+@keyframes gubka {
+  0%, 30% { transform: translate(-50px, 112px) rotate(-6deg); }
+  45% { transform: translate(90px, 104px) rotate(4deg); } 60% { transform: translate(180px, 116px) rotate(-4deg); }
+  80% { transform: translate(300px, 108px) rotate(5deg); } 100% { transform: translate(380px, 108px) rotate(5deg); }
+}
+@keyframes kopik { 0%, 32% { opacity: 0; } 40%, 78% { opacity: .9; } 90%, 100% { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(.4); } }
+@keyframes yelpigich1 { from { transform: rotate(0deg) translateX(30%); opacity: 0; } }
+@keyframes yelpigich2 { from { transform: rotate(0deg) translateX(-30%); opacity: 0; } }
+@keyframes osish { from { transform: scaleX(0); } }
+@keyframes katak { from { opacity: .12; transform: translateY(6px); } }
+@keyframes aylan { to { transform: rotate(360deg); } }
+@keyframes yoy { from { stroke-dashoffset: 276.5; } to { stroke-dashoffset: 0; } }
+
+/* Telefonda 2 ustun: tasvir koʻp, aylantirish kam */
+@media (max-width: 560px) {
+  .premium-royxat { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .premium-royxat h3 { padding: .65rem .7rem 0; font-size: .86rem; line-height: 1.25; hyphens: auto; overflow-wrap: break-word; }
+  .premium-royxat p { padding: .2rem .7rem .75rem; font-size: .76rem; line-height: 1.35; }
+  .premium-royxat p a { display: inline-block; margin: .2rem 0 0; white-space: normal; }
+  .premium-royxat li { border-radius: 12px; }
+  .vz-chiplar { gap: .2rem; bottom: .35rem; }
+  .vz-chiplar li { font-size: .6rem; padding: .12rem .4rem; }
+  .foyda-royxat .vz-f { max-width: 200px; }
+}

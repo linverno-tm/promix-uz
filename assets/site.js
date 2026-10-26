@@ -137,6 +137,22 @@
     kuzat.forEach((el) => io.observe(el));
   }
 
+  // ---- Tasvirlar faqat koʻringanda harakatlanadi; harakat cheklangan boʻlsa SVG (SMIL) ham toʻxtaydi ----
+  const tasvirlar = $$('.vz');
+  if (!harakat.matches) {
+    tasvirlar.forEach((v) => v.pauseAnimations && v.pauseAnimations());
+  } else if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((yozuvlar) => {
+      yozuvlar.forEach((y) => {
+        y.target.classList.toggle('korindi', y.isIntersecting);
+        if (y.target.pauseAnimations) (y.isIntersecting ? y.target.unpauseAnimations() : y.target.pauseAnimations());
+      });
+    }, { threshold: 0.35 });
+    tasvirlar.forEach((v) => io.observe(v));
+  } else {
+    tasvirlar.forEach((v) => v.classList.add('korindi'));
+  }
+
   // ---- Obyekt toʻplamlari ----
   const toplamlar = $$('[data-toplam]');
   $$('input[name="toplam"]').forEach((r) => r.addEventListener('change', () => {
