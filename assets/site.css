@@ -1326,3 +1326,89 @@ html:not(.js) .devor-boshqar, html:not(.js) .asbob { display: none; }
   .vz-chiplar li { font-size: .6rem; padding: .12rem .4rem; }
   .foyda-royxat .vz-f { max-width: 200px; }
 }
+
+/* =====================================================================
+   «Devor qanday quriladi» — skroll bilan boshqariladigan motion graphics.
+   .ish-jonli (JS, harakat cheklanmagan) — ekran qotadi, qatlamlar skroll bilan tushadi.
+   Aks holda: tayyor kesim va hamma qadamlar ro'yxat ko'rinishida.
+   ===================================================================== */
+.ish { position: relative; background: #EEF0EE; }
+.ish-sahna { max-width: var(--en); margin: 0 auto; padding: clamp(2.75rem, 2rem + 2.5vw, 4.75rem) var(--chet); }
+.ish-ichi { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.5rem, 1rem + 3vw, 4rem); align-items: center; width: 100%; }
+.ish-chap { display: grid; gap: 1rem; align-content: start; }
+.ish-kirish { color: var(--matn-2); font-size: 1.05rem; }
+.ish-svg { display: block; width: 100%; height: auto; }
+.js .ish-zaxira { display: none; }
+html:not(.js) .ish-svg { display: none; }
+.ish-zaxira .kesim-rasm { max-width: 460px; }
+
+/* qadam nuqtalari */
+.ish-nuqtalar { display: flex; align-items: center; gap: 0; margin: .25rem 0 .5rem; }
+.ish-nuqtalar li { display: flex; align-items: center; }
+.ish-nuqtalar li + li::before { content: ""; width: clamp(14px, 2.4vw, 28px); height: 2px; background: var(--chiziq-2); }
+.ish-nuqtalar button {
+  display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border-radius: 50%; cursor: pointer;
+  font: 700 .9rem var(--f-matn); color: var(--siyoh); background: #fff; border: 2px solid var(--chiziq-2);
+  transition: background .2s, border-color .2s, color .2s, transform .2s;
+}
+.ish-nuqtalar button.otdi { background: var(--siyoh); border-color: var(--siyoh); color: #fff; }
+.ish-nuqtalar button.faol { background: var(--moviy); border-color: var(--moviy); color: #fff; transform: scale(1.12); }
+.ish:not(.ish-jonli) .ish-nuqtalar { display: none; }
+
+/* qadam yozuvi */
+.ish-yozuv { display: grid; gap: .55rem; padding: 1.1rem 1.2rem; background: #fff; border: 1px solid var(--chiziq); border-radius: 16px; }
+.ish-yozuv h3 { display: flex; align-items: center; gap: .6rem; font-family: var(--f-sarlavha); font-weight: 600; font-size: 1.35rem; letter-spacing: -.01em; }
+.ish-raqam { display: grid; place-items: center; flex: none; width: 2rem; height: 2rem; border-radius: 50%; font: 700 .9rem var(--f-matn); color: #fff; background: var(--moviy); }
+.ish-yozuv > p { color: var(--matn-2); }
+.ish-mahsulot { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: .9rem; align-items: center; padding: .6rem; border-radius: 12px; background: #F6F5F2; text-decoration: none; }
+.ish-mahsulot img { width: 76px; height: 76px; mix-blend-mode: multiply; }
+.ish-mahsulot span { display: grid; gap: .1rem; }
+.ish-mahsulot b { color: var(--siyoh); }
+.ish-mahsulot small { font-size: .78rem; color: var(--matn-2); }
+.ish-mahsulot strong { font-family: var(--f-sarlavha); font-weight: 600; font-size: 1.35rem; color: var(--moviy); line-height: 1.2; }
+.ish-mahsulot:hover b { text-decoration: underline; }
+.ish-boshqa { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; font-size: .8rem; color: var(--matn-2); }
+.ish-boshqa span { margin-right: .2rem; }
+.ish-boshqa a { display: block; width: 46px; height: 46px; border-radius: 10px; background: #F6F5F2; border: 1px solid var(--chiziq); }
+.ish-boshqa a:hover { border-color: var(--moviy); }
+.ish-boshqa img { width: 100%; height: 100%; mix-blend-mode: multiply; }
+.ish-yozuv-tayyor .ish-raqam { background: var(--siyoh); }
+.ish-jami { display: grid; gap: .3rem; font-size: .9rem; }
+.ish-jami li { display: flex; justify-content: space-between; gap: 1rem; padding: .35rem 0; border-bottom: 1px dashed var(--chiziq); }
+.ish-jami b { color: var(--moviy); white-space: nowrap; }
+.ish-yozuvlar { display: grid; gap: .8rem; }
+
+/* ---------- Jonli rejim ---------- */
+.ish-jonli { height: calc(var(--ish-ekran, 6.4) * 100svh); }
+.ish-jonli .ish-sahna {
+  position: sticky; top: var(--tepa); height: calc(100svh - var(--tepa));
+  display: flex; align-items: center; padding-block: 1.25rem;
+}
+.ish-jonli .ish-yozuvlar { position: relative; display: block; min-height: 22rem; }
+.ish-jonli .ish-yozuv {
+  position: absolute; inset: 0 0 auto 0; opacity: 0; transform: translateY(18px); pointer-events: none;
+  transition: opacity .35s ease, transform .45s cubic-bezier(.2, .7, .2, 1);
+}
+.ish-jonli .ish-yozuv.faol { opacity: 1; transform: none; pointer-events: auto; }
+
+@media (max-width: 899px) {
+  .ish-ichi { grid-template-columns: minmax(0, 1fr); }
+  .ish-ong { order: -1; }
+  .ish-jonli .ish-sahna { align-items: flex-start; padding-block: .75rem; }
+  .ish-jonli .ish-ichi { gap: .5rem; }
+  .ish-jonli .ish-svg { max-height: 36svh; margin: 0 auto; }
+  .ish-jonli .ish-kirish { display: none; }
+  .ish-jonli h2 { font-size: 1.35rem; }
+  .ish-jonli .ish-chap { gap: .5rem; }
+  .ish-jonli .ish-nuqtalar { margin: 0; }
+  .ish-jonli .ish-nuqtalar button { width: 32px; height: 32px; font-size: .8rem; }
+  .ish-jonli .ish-yozuvlar { min-height: 17rem; }
+  .ish-yozuv { padding: .8rem .9rem; gap: .4rem; }
+  .ish-yozuv h3 { font-size: 1.12rem; }
+  .ish-yozuv > p { font-size: .9rem; }
+  .ish-mahsulot { grid-template-columns: 60px minmax(0, 1fr); gap: .7rem; padding: .45rem; }
+  .ish-mahsulot img { width: 60px; height: 60px; }
+  .ish-mahsulot strong { font-size: 1.1rem; }
+  .ish-jonli .ish-boshqa a { width: 38px; height: 38px; }
+  .ish-jonli .ish-yozuv-tayyor .ish-jami { display: none; }
+}
