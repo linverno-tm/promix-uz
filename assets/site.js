@@ -48,6 +48,53 @@
     io.observe(el);
   });
 
+  // ---- Til almashganda oʻsha joyda qolish ----
+  // Ikkala tildagi sahifalar bir xil shablondan: bloklar tartibi bir xil, shuning uchun
+  // «nechanchi blok va uning qaysi qismi» saqlanadi (matn uzunligi farq qilsa ham joy siljimaydi).
+  const langarlar = () => $$('main > *, main section');
+  const tepa = () => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 80;
+  $$('a.til').forEach((a) => a.addEventListener('click', () => {
+    const els = langarlar();
+    const t = tepa();
+    let idx = 0;
+    els.forEach((el, i) => { if (el.getBoundingClientRect().top <= t) idx = i; });
+    const r = els[idx].getBoundingClientRect();
+    const ulush = r.height ? Math.min(Math.max((t - r.top) / r.height, 0), 1) : 0;
+    try {
+      sessionStorage.setItem('til-joy', JSON.stringify({ yol: new URL(a.href).pathname, idx, ulush, sx: scrollY }));
+    } catch (e) { /* saqlab boʻlmasa — oddiy oʻtish */ }
+  }));
+  try {
+    const joy = JSON.parse(sessionStorage.getItem('til-joy') || 'null');
+    if (joy && joy.yol === location.pathname && !location.hash) {
+      sessionStorage.removeItem('til-joy');
+      if (joy.sx > 0) {
+        // shrift va suratlar yuklangach bloklar balandligi oʻzgaradi — joyni bir necha marta tiklaymiz,
+        // foydalanuvchi oʻzi aylantirsa toʻxtaymiz
+        let qol = false;
+        const toxta = () => { qol = true; };
+        addEventListener('wheel', toxta, { once: true, passive: true });
+        addEventListener('touchstart', toxta, { once: true, passive: true });
+        addEventListener('keydown', toxta, { once: true });
+        const joyla = () => {
+          if (qol) return;
+          const el = langarlar()[joy.idx];
+          if (!el) return;
+          const r = el.getBoundingClientRect();
+          window.scrollTo({ top: scrollY + r.top + r.height * joy.ulush - tepa(), behavior: 'instant' });
+        };
+        joyla();
+        if (document.fonts) document.fonts.ready.then(joyla);
+        addEventListener('load', joyla, { once: true });
+        if ('ResizeObserver' in window) {
+          const ro = new ResizeObserver(joyla);
+          ro.observe(document.body);
+          setTimeout(() => ro.disconnect(), 2500);
+        }
+      }
+    }
+  } catch (e) { /* eʼtiborsiz */ }
+
   // ---- Mobil menyu ----
   const menuTugma = $('.menu-tugma');
   const menu = $('#menu');
@@ -68,6 +115,61 @@
   $$('input[name="vazifa"]').forEach((r) => r.addEventListener('change', () => {
     javoblar.forEach((j) => { j.hidden = j.dataset.javob !== r.value; });
   }));
+
+  // ---- Oldin / keyin devori ----
+  const sahna = $('.ok-sahna');
+  if (sahna) {
+    const surgich = $('.ok-surgich', sahna);
+    const qoy = (v) => sahna.style.setProperty('--x', `${v}%`);
+    let qolda = false;
+    surgich.addEventListener('input', () => { qolda = true; qoy(surgich.value); });
+    // koʻringanda tutqich oʻzi bir marta yurib, natijani koʻrsatadi
+    if (harakat.matches && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(([y]) => {
+        if (!y.isIntersecting) return;
+        io.disconnect();
+        const nuqtalar = [[0, 50], [700, 86], [1700, 18], [2500, 50]];
+        const bosh = performance.now();
+        const qadam = (vaqt) => {
+          if (qolda) return;
+          const t = vaqt - bosh;
+          let i = 0;
+          while (i < nuqtalar.length - 2 && t > nuqtalar[i + 1][0]) i++;
+          const [t0, v0] = nuqtalar[i];
+          const [t1, v1] = nuqtalar[i + 1];
+          const p = Math.min(Math.max((t - t0) / (t1 - t0), 0), 1);
+          const e = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+          const v = v0 + (v1 - v0) * e;
+          qoy(v);
+          surgich.value = Math.round(v);
+          if (t < nuqtalar[nuqtalar.length - 1][0]) requestAnimationFrame(qadam);
+        };
+        requestAnimationFrame(qadam);
+      }, { threshold: 0.5 });
+      io.observe(sahna);
+    }
+  }
+
+  // ---- «Narx soʻrash» tugmalari formani toʻldiradi ----
+  $$('[data-ariza]').forEach((a) => a.addEventListener('click', () => {
+    const izoh = $('#f-izoh');
+    if (izoh) izoh.value = a.dataset.ariza;
+  }));
+
+  // ---- Telefonda pastki tugma: forma koʻringanda yashirinadi ----
+  const pastki = $('.pastki-cta');
+  const ariza = $('#ariza');
+  // hero tugmalari yoki formaning oʻzi koʻrinib tursa — bir ekranda ikki marta chiqmasin
+  const kuzat = [ariza, $('.hero2 .tugmalar'), $('.mahsulot-matn .tugmalar')].filter(Boolean);
+  if (pastki && kuzat.length && 'IntersectionObserver' in window) {
+    const korinadi = new Set();
+    pastki.classList.add('yashir');
+    const io = new IntersectionObserver((yozuvlar) => {
+      yozuvlar.forEach((y) => (y.isIntersecting ? korinadi.add(y.target) : korinadi.delete(y.target)));
+      pastki.classList.toggle('yashir', korinadi.size > 0);
+    }, { threshold: 0.1 });
+    kuzat.forEach((el) => io.observe(el));
+  }
 
   // ---- Obyekt toʻplamlari ----
   const toplamlar = $$('[data-toplam]');

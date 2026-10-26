@@ -866,3 +866,166 @@ main:focus { outline: none; }
 @media (min-width: 900px) and (max-width: 1199px) {
   .hero2-rasm img, .hero2-video { object-position: 40% 50%; }
 }
+
+/* =====================================================================
+   v3 (26.10): o'zimizning uslub — rus saytidan farqli.
+   Toza och fon, to'q siyoh-moviy matn, to'q sariq (terrakota emas) chaqiruv tugmasi,
+   «oldin/keyin» devorida Samarqand moviysi. Ishlab chiqaruvchining to'q ko'k + qizil juftligi ishlatilmaydi.
+   ===================================================================== */
+:root {
+  --ohak: #F5F6F4;
+  --siyoh: #13232E;
+  --siyoh-2: #2B4252;
+  --matn: #18242C;
+  --matn-2: #4B5963;
+  --qizil: #C2410C;      /* chaqiruv (CTA) — oq matn bilan 5.2:1 */
+  --qizil-2: #9A3412;
+  --moviy: #0E7C86;
+  --moviy-och: #E2F0EF;
+  --toq: #0F2A33;        /* toʻq bloklar: siyoh-moviy, qora-koʻk emas */
+}
+
+/* Tugmalar: yumaloqroq, chaqiruv yorqin, bosilganda «choʻkadi» */
+.tugma { border-radius: 10px; font-weight: 650; box-shadow: 0 6px 18px -8px rgb(194 65 12 / .55); transition: background-color .15s, border-color .15s, transform .12s, box-shadow .15s; }
+.tugma:hover { transform: translateY(-1px); box-shadow: 0 10px 22px -10px rgb(194 65 12 / .6); }
+.tugma:active { transform: translateY(1px); box-shadow: none; }
+.tugma-ikkinchi, .tugma-och { box-shadow: none; }
+.tugma-ikkinchi:hover, .tugma-och:hover { box-shadow: none; }
+.til { border-radius: 10px; }
+.menu-tugma { border-radius: 10px; }
+.chip span { border-radius: 10px; }
+.chip input:checked + span { background: var(--moviy); border-color: var(--moviy); }
+
+/* Toʻq bloklar — siyoh-moviy */
+.tanlash, .pastki, .maslahat-h { background: var(--toq); }
+.tanlash-variant input:checked + span::before { background: var(--qizil); }
+.q5, .b5 { background: var(--shovqin), linear-gradient(135deg, #3E9AA1, #1F6E76); background-size: 90px, auto; background-blend-mode: soft-light, normal; }
+.bosqich-raqam, .tarix-chiziq b { color: var(--moviy); }
+.tarix-chiziq li::before { background: var(--moviy); }
+.faktlar b { color: #fff; }
+.faktlar li::before { content: ""; display: block; width: 28px; height: 3px; background: #4FC0C7; margin-bottom: .6rem; border-radius: 2px; }
+.diler-kim li::before, .xossalar li::before, .maslahat-h li::before { background: var(--moviy); border-radius: 2px; }
+.maslahat-h li::before { background: #4FC0C7; }
+.menu ul a:hover, .menu ul a[aria-current="page"] { border-bottom-color: var(--moviy); }
+
+/* Hero: matn kirishi (bitta orkestrlangan lahza) */
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero2-matn > * { animation: kir .7s cubic-bezier(.2, .7, .2, 1) both; }
+  .js .hero2-matn > :nth-child(2) { animation-delay: .12s; }
+  .js .hero2-matn > :nth-child(3) { animation-delay: .24s; }
+  .js .faktlar li { animation: kir .6s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(.35s + var(--i, 0) * .08s); }
+  .js .faktlar li:nth-child(2) { --i: 1; } .js .faktlar li:nth-child(3) { --i: 2; } .js .faktlar li:nth-child(4) { --i: 3; }
+}
+@keyframes kir { from { opacity: 0; transform: translateY(18px); } }
+
+/* ---------- Oldin / Keyin ---------- */
+.ok { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(2rem, 1rem + 4vw, 4.5rem); align-items: center; }
+.ok-matn { display: grid; gap: 1.1rem; }
+.ok-matn > p { color: var(--matn-2); font-size: 1.08rem; }
+.ok-matn .tugma { margin-top: .5rem; }
+.ok-qadamlar { display: grid; gap: .5rem; counter-reset: q; }
+.ok-qadamlar li { counter-increment: q; }
+.ok-qadamlar a {
+  display: grid; grid-template-columns: auto 52px minmax(0, 1fr); align-items: center; gap: .8rem;
+  padding: .45rem .75rem .45rem .6rem; background: #fff; border: 1px solid var(--chiziq); border-radius: 12px; text-decoration: none;
+  transition: border-color .15s, transform .15s;
+}
+.ok-qadamlar a::before {
+  content: counter(q); display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  font-weight: 700; font-size: .8rem; color: #fff; background: var(--moviy);
+}
+.ok-qadamlar a:hover { border-color: var(--moviy); transform: translateX(3px); }
+.ok-qadamlar img { width: 52px; height: 52px; mix-blend-mode: multiply; }
+.ok-qadamlar span { display: grid; font-size: .88rem; color: var(--matn-2); line-height: 1.35; }
+.ok-qadamlar b { color: var(--siyoh); font-size: .97rem; }
+
+.ok-sahna {
+  position: relative; margin: 0; aspect-ratio: 4 / 3; border-radius: 18px; overflow: hidden;
+  box-shadow: 0 30px 60px -30px rgb(15 42 51 / .45); user-select: none; touch-action: pan-y;
+}
+.ok-keyin, .ok-oldin { position: absolute; inset: 0; }
+/* Keyin: boʻyalgan xona devori — deraza nuri, plintus */
+.ok-keyin {
+  background:
+    linear-gradient(105deg, transparent 0 46%, rgb(255 255 255 / .22) 46% 64%, transparent 64%) ,
+    radial-gradient(120% 90% at 15% 0%, #CFE7E4 0%, #9CCAC6 55%, #7DB3AE 100%);
+}
+.ok-keyin::before { /* mayda valik teksturasi */
+  content: ""; position: absolute; inset: 0; background: var(--shovqin); background-size: 120px; opacity: .18; mix-blend-mode: soft-light;
+}
+.ok-keyin::after { /* plintus */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 9%;
+  background: linear-gradient(#FFFFFF, #ECEFEE); box-shadow: 0 -2px 0 rgb(15 42 51 / .08), 0 -10px 18px -10px rgb(15 42 51 / .25);
+}
+/* Oldin: yoriq, chuqurcha, koʻchgan boʻyoqli beton */
+.ok-oldin {
+  background: var(--govak), var(--shovqin), linear-gradient(160deg, #B3AFA6, #8F8B83);
+  background-size: 260px, 180px, auto; background-blend-mode: normal, soft-light, normal;
+  clip-path: inset(0 calc(100% - var(--x)) 0 0);
+}
+.ok-yoriq { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ok-yorliq {
+  position: absolute; top: 1rem; left: 1rem; padding: .3rem .75rem; border-radius: 999px;
+  font-weight: 700; font-size: .85rem; color: #fff; background: rgb(19 35 46 / .72);
+}
+.ok-yorliq-keyin { left: auto; right: 1rem; background: rgb(14 124 134 / .9); }
+.ok-chiziq { position: absolute; top: 0; bottom: 0; left: var(--x); width: 3px; margin-left: -1.5px; background: #fff; box-shadow: 0 0 0 1px rgb(15 42 51 / .15); pointer-events: none; }
+.ok-tutqich {
+  position: absolute; top: 50%; left: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%;
+  background: #fff; box-shadow: 0 8px 20px rgb(15 42 51 / .3);
+}
+.ok-tutqich::before, .ok-tutqich::after { /* chap-oʻng uchlar */
+  content: ""; position: absolute; top: 50%; width: 9px; height: 9px; margin-top: -5px;
+  border-left: 2.5px solid var(--siyoh); border-bottom: 2.5px solid var(--siyoh);
+}
+.ok-tutqich::before { left: 14px; transform: rotate(45deg); }
+.ok-tutqich::after { right: 14px; transform: rotate(-135deg); }
+.ok-surgich { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.ok-sahna:has(.ok-surgich:focus-visible) .ok-tutqich { outline: 3px solid var(--qizil); outline-offset: 3px; }
+@media (max-width: 899px) { .ok { grid-template-columns: minmax(0, 1fr); } .ok-sahna { order: -1; } }
+@media (max-width: 480px) { .ok-sahna { aspect-ratio: 1; border-radius: 14px; } .ok-tutqich { width: 46px; height: 46px; margin: -23px 0 0 -23px; } }
+
+/* ---------- Foyda raqamlarda ---------- */
+.foyda { background: var(--moviy-och); max-width: none; }
+.foyda > * { max-width: calc(var(--en) - 2 * var(--chet)); margin-inline: auto; }
+.foyda h2 { margin-bottom: 2.25rem; }
+.foyda-royxat { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+.foyda-royxat li { display: grid; align-content: start; gap: .45rem; padding: 1.5rem 1.4rem 1.6rem; background: #fff; border-radius: 16px; box-shadow: 0 1px 0 rgb(15 42 51 / .06); }
+.foyda-royxat b { white-space: nowrap; font-family: var(--f-sarlavha); font-weight: 650; font-size: clamp(1.8rem, 1.4rem + 1.2vw, 2.5rem); line-height: 1; color: var(--moviy); letter-spacing: -.02em; }
+.foyda-qisqa { font-weight: 650; color: var(--siyoh); }
+.foyda-royxat p { color: var(--matn-2); font-size: .93rem; }
+.foyda-royxat a { margin-top: .3rem; font-size: .9rem; font-weight: 600; color: var(--siyoh); }
+@media (max-width: 1023px) { .foyda-royxat { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .foyda-royxat { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Toʻplam chaqiruvi ---------- */
+.toplam-guruh { display: grid; gap: 1.5rem; justify-items: start; }
+.toplam-guruh[hidden] { display: none; }
+.toplam-guruh .toplam-qadam { width: 100%; }
+.toplam-raqam { background: var(--moviy); }
+.toplam-qadam img { mix-blend-mode: multiply; }
+
+/* ---------- Telefonda pastki chaqiruv ---------- */
+.pastki-cta { display: none; }
+@media (max-width: 760px) {
+  .pastki-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    display: flex; gap: .5rem; padding: .6rem var(--chet) calc(.6rem + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, #fff 94%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--chiziq);
+    transition: transform .25s ease-out;
+  }
+  .pastki-cta .tugma { flex: 1; min-height: 48px; }
+  .pastki-cta .tugma-ikkinchi { flex: 0 0 auto; }
+  .pastki-cta.yashir { transform: translateY(110%); }
+  body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+}
+
+/* Skroll bilan chiqish — yangi bloklar ham */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    .foyda-royxat > li, .ok-qadamlar > li {
+      animation: chiq linear both; animation-timeline: view(); animation-range: entry 0% entry 70%;
+    }
+  }
+}
