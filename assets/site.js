@@ -95,6 +95,22 @@
     }
   } catch (e) { /* eʼtiborsiz */ }
 
+  // ---- Menyu qatorga sigʻmasa (masalan ruscha matn uzun) — «Menyu» tugmasiga oʻtadi ----
+  const tepaEl = $('.tepa');
+  const tepaIchi = $('.tepa-ichi');
+  if (tepaEl && tepaIchi) {
+    const olchash = () => {
+      if (matchMedia('(max-width: 899px)').matches) { tepaEl.classList.remove('tor'); return; }
+      tepaEl.classList.remove('tor');
+      const sigmaydi = tepaIchi.scrollWidth > tepaIchi.clientWidth + 1
+        || $$('.menu ul a', tepaIchi).some((a) => a.getBoundingClientRect().height > 40);
+      tepaEl.classList.toggle('tor', sigmaydi);
+    };
+    olchash();
+    if (document.fonts) document.fonts.ready.then(olchash);
+    addEventListener('resize', olchash);
+  }
+
   // ---- Mobil menyu ----
   const menuTugma = $('.menu-tugma');
   const menu = $('#menu');
@@ -126,7 +142,8 @@
   const pastki = $('.pastki-cta');
   const ariza = $('#ariza');
   // hero tugmalari yoki formaning oʻzi koʻrinib tursa — bir ekranda ikki marta chiqmasin
-  const kuzat = [ariza, $('.hero2 .tugmalar'), $('.mahsulot-matn .tugmalar')].filter(Boolean);
+  // «Devor qanday quriladi» sahnasi ham — u ekranni toʻliq egallaydi
+  const kuzat = [ariza, $('.hero2 .tugmalar'), $('.mahsulot-matn .tugmalar'), $('.ish')].filter(Boolean);
   if (pastki && kuzat.length && 'IntersectionObserver' in window) {
     const korinadi = new Set();
     pastki.classList.add('yashir');

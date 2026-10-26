@@ -1327,6 +1327,21 @@ html:not(.js) .devor-boshqar, html:not(.js) .asbob { display: none; }
   .foyda-royxat .vz-f { max-width: 200px; }
 }
 
+/* ---------- Foyda: haqiqiy suratli kartalar ---------- */
+.foyda-royxat .foyda-karta { position: relative; padding: 0; overflow: hidden; aspect-ratio: 4 / 5; border-radius: 16px; background: #1F252B; isolation: isolate; }
+.foyda-karta img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transform: scale(1.02); }
+.foyda-karta::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgb(10 12 14 / .05) 25%, rgb(10 12 14 / .55) 55%, rgb(10 12 14 / .92) 100%); }
+.foyda-ustki { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: .3rem; padding: 1.25rem 1.3rem 1.35rem; }
+.foyda-ustki b { white-space: nowrap; font-family: var(--f-sarlavha); font-weight: 650; font-size: clamp(2rem, 1.5rem + 1.4vw, 2.8rem); line-height: 1; color: var(--oltin); letter-spacing: -.02em; text-shadow: 0 2px 12px rgb(0 0 0 / .35); }
+.foyda-ustki .foyda-qisqa { color: #fff; font-weight: 650; }
+.foyda-ustki a { font-size: .88rem; font-weight: 600; color: #E4D3B1; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .foyda-karta.korindi img { animation: kenburns 14s ease-out both; }
+  .foyda-karta:hover img { transform: scale(1.06); transition: transform .6s ease-out; }
+}
+@keyframes kenburns { from { transform: scale(1.14) translate(-2%, 1%); } to { transform: scale(1.02); } }
+@media (max-width: 560px) { .foyda-royxat .foyda-karta { aspect-ratio: 16 / 11; } }
+
 /* =====================================================================
    «Devor qanday quriladi» — skroll bilan boshqariladigan motion graphics.
    .ish-jonli (JS, harakat cheklanmagan) — ekran qotadi, qatlamlar skroll bilan tushadi.
@@ -1412,3 +1427,160 @@ html:not(.js) .ish-svg { display: none; }
   .ish-jonli .ish-boshqa a { width: 38px; height: 38px; }
   .ish-jonli .ish-yozuv-tayyor .ish-jami { display: none; }
 }
+
+/* =====================================================================
+   «Devor qanday quriladi» — real 3D sahna (CSS 3D). JS (ish.js) quradi.
+   Yorug'lik: yuqori chapdan; old yuz yorug', yuqori qirra yorqinroq, o'ng qirra soyada.
+   ===================================================================== */
+.ish-3d { position: relative; width: 100%; max-width: 640px; margin-inline: auto; }
+html:not(.js) .ish-3d { display: none; }
+.ish-olcham { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.ish-pol {
+  position: absolute; left: 20px; top: 426px; width: 500px; height: 70px;
+  background: radial-gradient(closest-side, rgb(15 20 25 / .42), rgb(15 20 25 / 0));
+  filter: blur(4px);
+}
+.ish-kamera { position: absolute; inset: 0; perspective: 1500px; perspective-origin: 45% 30%; }
+.ish-kub { position: absolute; left: 64px; top: 100px; transform-style: preserve-3d; transform: rotateX(-16deg) rotateY(-32deg); }
+.qt { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.qt.bosh { visibility: hidden; }
+.yuz { position: absolute; left: 0; top: 0; transform-origin: 0 0; background-size: cover; background-position: center; overflow: hidden; }
+.yuz::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+/* qatlam yuqoridan pastga «surtiladi» */
+.qt .yuz-old, .qt .yuz-ong, .yuz-nam { clip-path: inset(0 0 calc((1 - var(--p, 1)) * 100%) 0); }
+/* yorug'lik */
+.yuz-old::after {
+  background: linear-gradient(125deg, rgb(255 255 255 / .16), rgb(255 255 255 / 0) 42%, rgb(0 0 0 / .18));
+  box-shadow: inset 0 0 46px rgb(0 0 0 / .16);
+}
+.yuz-tepa::after { background: linear-gradient(rgb(255 255 255 / .12), rgb(255 255 255 / .26)); }
+.yuz-ong::after { background: linear-gradient(90deg, rgb(0 0 0 / .26), rgb(0 0 0 / .46)); }
+.qt-beton .yuz-tepa, .qt-beton .yuz-ong { background-size: 260px 260px; background-repeat: repeat; }
+/* grunt: chuqur singish — qirrada nam chiziq ichkariga o'sadi */
+.singish { position: absolute; pointer-events: none; z-index: 1; }
+.singish-tepa { left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgb(30 24 16 / .82), rgb(30 24 16 / .45) 70%, rgb(30 24 16 / 0)); }
+.singish-ong {
+  left: 0; top: 0; bottom: 0; background: linear-gradient(to right, rgb(30 24 16 / .82), rgb(30 24 16 / .45) 70%, rgb(30 24 16 / 0));
+  clip-path: inset(0 0 calc((1 - var(--p, 0)) * 100%) 0);
+}
+/* bo'yoq: 1-qatlam och va notekis, 2-qatlam to'liq */
+.qt-b1 .yuz-old {
+  opacity: .62; filter: saturate(.8);
+  /* valik izlari: notekis, turli enli tik chiziqlar — gulqogʻoz emas */
+  -webkit-mask-image: linear-gradient(90deg, #000 0 9%, rgb(0 0 0 / .55) 13%, #000 17% 31%, rgb(0 0 0 / .4) 35%, #000 40% 52%, rgb(0 0 0 / .6) 57%, #000 61% 74%, rgb(0 0 0 / .45) 79%, #000 83% 100%), linear-gradient(#000, rgb(0 0 0 / .75));
+  mask-image: linear-gradient(90deg, #000 0 9%, rgb(0 0 0 / .55) 13%, #000 17% 31%, rgb(0 0 0 / .4) 35%, #000 40% 52%, rgb(0 0 0 / .6) 57%, #000 61% 74%, rgb(0 0 0 / .45) 79%, #000 83% 100%), linear-gradient(#000, rgb(0 0 0 / .75));
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+}
+/* F: yon nur o'tadi — silliq sirtda soya yo'q */
+.nur {
+  position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity .3s; mix-blend-mode: screen;
+  background: linear-gradient(100deg, rgb(255 244 214 / 0) calc(var(--x, -30%) - 14%), rgb(255 244 214 / .6) var(--x, -30%), rgb(255 244 214 / 0) calc(var(--x, -30%) + 14%));
+}
+/* marker — 3D nuqtani ekranga o'girish uchun */
+.ish-marker { position: absolute; left: 0; top: 0; width: 1px; height: 1px; pointer-events: none; }
+
+/* ustki qatlam: asboblar va belgilar (2D) */
+.ish-ustki { position: absolute; inset: 0; pointer-events: none; }
+.ish-asbob { position: absolute; left: 0; top: 0; opacity: 0; transition: opacity .2s; will-change: transform; }
+.ish-asbob.faol { opacity: 1; }
+.ish-asbob svg { position: absolute; display: none; max-width: none; filter: drop-shadow(-10px 16px 10px rgb(0 0 0 / .32)); }
+.ish-asbob svg.bu { display: block; }
+.a-valik { width: 220px; height: 190px; left: -110px; top: -40px; }
+.a-shpatel { width: 220px; height: 170px; left: -110px; top: -30px; }
+.a-rulon { width: 380px; height: 50px; left: -190px; top: -25px; }
+.ish-chizgi { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; opacity: 0; transition: opacity .25s; }
+.ish-chizgi.korinadi { opacity: 1; }
+.ish-chizgi .qavs { stroke: #15191E; stroke-width: 2.2; stroke-linejoin: round; }
+.ish-chizgi .tirgak { stroke: #15191E; stroke-width: 1.5; }
+.ish-chizgi .pill { fill: #15191E; }
+.ish-chizgi .pill-matn { fill: #fff; font: 700 14px var(--f-matn); }
+/* tayyor */
+.ish-olcham::after {
+  content: "✓"; position: absolute; left: 400px; top: 76px; display: grid; place-items: center;
+  width: 58px; height: 58px; border-radius: 50%; font: 700 30px var(--f-matn); color: #fff; background: var(--moviy);
+  box-shadow: 0 10px 24px -8px rgb(0 0 0 / .45); opacity: 0; transform: scale(.6); transition: opacity .3s, transform .35s cubic-bezier(.3, 1.6, .5, 1);
+}
+.ish-3d.tayyor .ish-olcham::after { opacity: 1; transform: none; }
+@media (max-width: 899px) { .ish-jonli .ish-3d { max-width: min(100%, 52svh); } }
+
+/* lupa — kesim kattalashtirilgan */
+.ish-chizgi .lupa-halqa { stroke: #15191E; stroke-width: 5; }
+.ish-chizgi .lupa { filter: drop-shadow(0 10px 18px rgb(0 0 0 / .28)); }
+.ish-chizgi .lupa-tirgak { stroke: #15191E; stroke-width: 2; stroke-dasharray: 5 4; }
+.ish-chizgi .lupa-yuz { stroke: rgb(0 0 0 / .35); stroke-width: 1; stroke-dasharray: 3 3; }
+.ish-chizgi .lupa-olchov path { stroke: #8A6A33; stroke-width: 2.2; fill: none; }
+.ish-chizgi .lupa-strelka path { stroke: #F2E6C8; stroke-width: 2.4; stroke-linecap: round; }
+.ish-chizgi .lupa-strelka { transition: opacity .3s; }
+
+/* =====================================================================
+   Til almashganda matn buzilmasin (26.10): ruscha so'zlar uzunroq.
+   - Menyu va tugmalardagi yozuv hech qachon ikki qatorga sinmaydi.
+   - Menyu qatorga sig'masa (JS .tor qo'yadi), kompyuterda ham «Menyu» tugmasiga o'tadi.
+   ===================================================================== */
+.menu ul a, .menu-oxir .tugma, .til, .tugma, .chip span, .devor-tugma, .video-tugma, .ish-nuqtalar button { white-space: nowrap; }
+.tugmalar .tugma { max-width: 100%; }
+
+.tepa.tor .menu-tugma { display: inline-flex; }
+.js .tepa.tor .menu {
+  position: absolute; left: 0; right: 0; top: 100%;
+  flex-direction: column; align-items: stretch; gap: 0;
+  background: var(--ohak); border-bottom: 1px solid var(--chiziq);
+  padding: .5rem var(--chet) 1.25rem;
+  max-height: calc(100svh - var(--tepa)); overflow-y: auto;
+}
+.js .tepa.tor .menu:not(.ochiq) { display: none; }
+.tepa.tor .menu ul { flex-direction: column; gap: 0; }
+.tepa.tor .menu ul a { display: block; padding: .85rem 0; border-bottom: 1px solid var(--chiziq); }
+.tepa.tor .menu ul a:hover, .tepa.tor .menu ul a[aria-current="page"] { border-bottom-color: var(--chiziq); color: var(--qizil); }
+.tepa.tor .menu-oxir { padding-top: 1rem; justify-content: space-between; }
+@media (min-width: 900px) {
+  .tepa.tor .menu { left: auto; width: min(420px, 100%); border-left: 1px solid var(--chiziq); border-radius: 0 0 0 16px; box-shadow: 0 20px 40px -20px rgb(21 25 30 / .35); }
+}
+
+/* Mahsulot sahifasi: 5 bosqich chizigʻi telefonda — uzun ruscha soʻzlar boʻgʻinga boʻlinadi */
+@media (max-width: 560px) {
+  .bosqich-chiziq li { font-size: .66rem; line-height: 1.2; hyphens: auto; overflow-wrap: anywhere; min-width: 0; }
+  .bosqich-chiziq .bosqich-namuna { width: 100%; }
+}
+/* «Bundan oldin / keyin» — tor ustunda bitta qator */
+@media (min-width: 900px) and (max-width: 1180px) { .qoshni-qadam { grid-template-columns: minmax(0, 1fr); } }
+.qoshni-qadam span { overflow-wrap: anywhere; }
+
+/* «Devor qanday quriladi»: kartalar ekranga sigʻsin */
+.ish-jonli .ish-yozuv-tayyor .gidro-eslatma { display: none; }
+.ish-jonli .ish-jami { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1rem; font-size: .82rem; }
+.ish-jonli .ish-jami li { padding: .25rem 0; }
+@media (max-height: 860px) and (min-width: 900px) {
+  .ish-jonli .ish-kirish { display: none; }
+  .ish-jonli .ish-yozuv { padding: .9rem 1rem; gap: .45rem; }
+  .ish-jonli .ish-mahsulot img { width: 64px; height: 64px; }
+  .ish-jonli .ish-mahsulot { grid-template-columns: 64px minmax(0, 1fr); }
+}
+@media (max-width: 899px) {
+  .ish-jonli .ish-svg { max-height: 30svh; }
+  .ish-jonli .ish-yozuv > p { display: none; }
+  .ish-jonli .ish-jami { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 899px) and (max-height: 760px) {
+  .ish-jonli .ish-boshqa { display: none; }
+  .ish-jonli .ish-mahsulot small:last-of-type { display: none; }
+}
+@media (max-width: 1199px) { .ish-jonli .ish-jami { grid-template-columns: minmax(0, 1fr); } }
+.ish-jami b { overflow-wrap: anywhere; text-align: right; }
+
+/* Foyda kartalari: ruscha «5 циклов» kabi uzun raqam ham karta ichida qolsin */
+.foyda-ustki b { white-space: normal; overflow-wrap: anywhere; font-size: clamp(1.8rem, 1.3rem + 1.2vw, 2.6rem); }
+.foyda-ustki > * { min-width: 0; }
+.foyda-ustki { grid-template-columns: minmax(0, 1fr); }
+/* Juda tor telefon (320 px): «Devor qanday quriladi» ichki gridi */
+.ish-ichi > * { min-width: 0; }
+.ish-chap { grid-template-columns: minmax(0, 1fr); }
+.ish-yozuv, .ish-yozuvlar { min-width: 0; }
+.ish-mahsulot > span, .ish-mahsulot b, .ish-mahsulot small, .ish-mahsulot strong { min-width: 0; overflow-wrap: anywhere; }
+.ish-yozuv h3 { overflow-wrap: anywhere; hyphens: auto; }
+.ish-jami li { min-width: 0; flex-wrap: wrap; }
+.ish-jami li > span { min-width: 0; flex: 1 1 8rem; overflow-wrap: anywhere; }
+.ish-jami b { white-space: normal; flex: 0 1 auto; }
+.ish-yozuv { grid-template-columns: minmax(0, 1fr); }
+/* juda tor telefonda uzun tugma yozuvi ikki qatorga oʻtadi (ekrandan chiqmaydi) */
+@media (max-width: 380px) { .ish-yozuv .tugma, .toplam-cta, .diler .tugma { white-space: normal; text-align: center; } }
