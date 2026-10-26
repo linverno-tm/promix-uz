@@ -116,40 +116,6 @@
     javoblar.forEach((j) => { j.hidden = j.dataset.javob !== r.value; });
   }));
 
-  // ---- Oldin / keyin devori ----
-  const sahna = $('.ok-sahna');
-  if (sahna) {
-    const surgich = $('.ok-surgich', sahna);
-    const qoy = (v) => sahna.style.setProperty('--x', `${v}%`);
-    let qolda = false;
-    surgich.addEventListener('input', () => { qolda = true; qoy(surgich.value); });
-    // koʻringanda tutqich oʻzi bir marta yurib, natijani koʻrsatadi
-    if (harakat.matches && 'IntersectionObserver' in window) {
-      const io = new IntersectionObserver(([y]) => {
-        if (!y.isIntersecting) return;
-        io.disconnect();
-        const nuqtalar = [[0, 50], [700, 86], [1700, 18], [2500, 50]];
-        const bosh = performance.now();
-        const qadam = (vaqt) => {
-          if (qolda) return;
-          const t = vaqt - bosh;
-          let i = 0;
-          while (i < nuqtalar.length - 2 && t > nuqtalar[i + 1][0]) i++;
-          const [t0, v0] = nuqtalar[i];
-          const [t1, v1] = nuqtalar[i + 1];
-          const p = Math.min(Math.max((t - t0) / (t1 - t0), 0), 1);
-          const e = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
-          const v = v0 + (v1 - v0) * e;
-          qoy(v);
-          surgich.value = Math.round(v);
-          if (t < nuqtalar[nuqtalar.length - 1][0]) requestAnimationFrame(qadam);
-        };
-        requestAnimationFrame(qadam);
-      }, { threshold: 0.5 });
-      io.observe(sahna);
-    }
-  }
-
   // ---- «Narx soʻrash» tugmalari formani toʻldiradi ----
   $$('[data-ariza]').forEach((a) => a.addEventListener('click', () => {
     const izoh = $('#f-izoh');

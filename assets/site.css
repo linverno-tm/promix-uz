@@ -1029,3 +1029,146 @@ main:focus { outline: none; }
     }
   }
 }
+
+/* ---------- Devor ta'miri jarayoni (canvas) ---------- */
+.devor { background: #8f8b83; }
+.devor-zaxira, .devor-canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.js .devor-zaxira { visibility: hidden; }
+.devor-canvas { display: block; }
+.asbob {
+  position: absolute; left: 0; top: 0; width: 26%; height: auto; pointer-events: none;
+  transform: translate(-50%, -50%); opacity: 0; transition: opacity .25s;
+  filter: drop-shadow(0 10px 14px rgb(15 42 51 / .35));
+  will-change: transform, left, top;
+}
+.asbob.faol { opacity: 1; }
+.devor-yorliq {
+  position: absolute; top: 1rem; left: 1rem; z-index: 2; max-width: calc(100% - 2rem);
+  padding: .4rem .85rem; border-radius: 999px; font-weight: 700; font-size: .9rem; color: #fff;
+  background: rgb(19 35 46 / .78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.devor-yorliq.tayyor { background: rgb(14 124 134 / .92); }
+.devor-boshqar { position: absolute; right: 1rem; bottom: 1rem; z-index: 2; display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+.devor-tugma {
+  min-height: 40px; padding: .4rem .9rem; border-radius: 999px; cursor: pointer;
+  font: 650 .85rem var(--f-matn); color: var(--siyoh); background: rgb(255 255 255 / .92); border: 0;
+  box-shadow: 0 6px 16px -6px rgb(15 42 51 / .4);
+}
+.devor-tugma:hover { background: #fff; }
+.devor-tugma[aria-pressed="true"] { background: var(--siyoh); color: #fff; }
+html:not(.js) .devor-boshqar, html:not(.js) .asbob { display: none; }
+
+/* Qadam tugmalari (chap ustun) */
+.ok-qadamlar li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5rem; }
+.qadam-tugma {
+  position: relative; display: grid; grid-template-columns: auto 52px minmax(0, 1fr); align-items: center; gap: .8rem;
+  width: 100%; padding: .45rem .75rem .45rem .6rem; text-align: left; cursor: pointer; overflow: hidden;
+  font: inherit; color: inherit; background: #fff; border: 1px solid var(--chiziq); border-radius: 12px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.ok-qadamlar li { counter-increment: q; }
+.qadam-tugma::before {
+  content: counter(q); display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  font-weight: 700; font-size: .8rem; color: var(--moviy); background: var(--moviy-och); transition: background .2s, color .2s;
+}
+.qadam-tugma img { width: 52px; height: 52px; mix-blend-mode: multiply; }
+.qadam-tugma span { display: grid; font-size: .88rem; color: var(--matn-2); line-height: 1.35; }
+.qadam-tugma b { color: var(--siyoh); font-size: .97rem; }
+.qadam-tugma:hover { border-color: var(--moviy); }
+.qadam-tugma[aria-pressed="true"] { border-color: var(--moviy); box-shadow: 0 8px 20px -12px rgb(14 124 134 / .7); }
+.qadam-tugma[aria-pressed="true"]::before, .qadam-tugma.bajarildi::before { color: #fff; background: var(--moviy); }
+.qadam-chiziq { position: absolute; left: 0; bottom: 0; height: 3px; width: calc(var(--p, 0) * 100%); background: var(--moviy); }
+.qadam-havola { font-size: .85rem; font-weight: 600; color: var(--siyoh); white-space: nowrap; }
+@media (max-width: 480px) {
+  .ok-qadamlar li { grid-template-columns: minmax(0, 1fr); gap: .2rem; }
+  .qadam-havola { justify-self: end; }
+  .devor-yorliq { font-size: .8rem; top: .6rem; left: .6rem; }
+  .devor-boshqar { right: .6rem; bottom: .6rem; }
+  .devor-tugma { min-height: 36px; font-size: .78rem; padding: .35rem .7rem; }
+}
+
+/* =====================================================================
+   Bo'sh joylarni to'ldirish (26.10): misol hisob, tekshiruv ro'yxati, savol CTA,
+   «qanday ishlaymiz», mahsulot yon paneli; bloklar oralig'i qisqaroq.
+   ===================================================================== */
+.blok { padding-block: clamp(2.75rem, 2rem + 2.5vw, 4.75rem); }
+.blok-bosh { margin-bottom: clamp(1.5rem, 1.2rem + 1vw, 2.25rem); }
+
+/* Kompaniya sahifasidagi faktlar: och fonda koʻrinsin */
+.faktlar-och b { color: var(--moviy); }
+
+/* «Batafsil» havolasiga eski raqam belgisi tushmasin */
+.ok-qadamlar .qadam-havola { display: inline; padding: 0; border: 0; background: none; }
+.ok-qadamlar .qadam-havola::before { content: none; }
+.ok-qadamlar .qadam-havola:hover { transform: none; text-decoration-thickness: 2px; }
+
+/* Toʻplam: kartalar soni boʻyicha butun kenglik */
+@media (min-width: 1024px) { .toplam-qadam { grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); } }
+
+/* ---------- Misol hisob (Ish tartibi chap ustuni) ---------- */
+.misol { margin-top: 1.75rem; padding: 1.25rem 1.4rem 1.1rem; background: #fff; border: 1px solid var(--chiziq); border-radius: 16px; }
+.misol h3 { margin-bottom: .9rem; }
+.misol table { width: 100%; border-collapse: collapse; font-size: .93rem; }
+.misol thead th { text-align: left; font-size: .8rem; font-weight: 600; color: var(--matn-2); padding: 0 0 .5rem; border-bottom: 2px solid var(--siyoh); }
+.misol thead th:last-child, .misol td { text-align: right; }
+.misol tbody th, .misol td { padding: .65rem 0; border-bottom: 1px solid var(--chiziq); vertical-align: top; font-weight: 400; }
+.misol tbody th { text-align: left; padding-right: 1rem; }
+.misol tbody th a { display: block; font-weight: 650; color: var(--siyoh); text-decoration: none; }
+.misol tbody th a:hover { text-decoration: underline; }
+.misol tbody th span, .misol td span { display: block; font-size: .82rem; color: var(--matn-2); margin-top: .1rem; }
+.misol td b { font-family: var(--f-sarlavha); font-weight: 600; color: var(--moviy); white-space: nowrap; }
+.misol .eslatma { margin-top: .75rem; font-size: .8rem; }
+@media (max-width: 480px) { .misol { padding: 1rem; } .misol tbody th, .misol td { display: block; text-align: left; border: 0; padding: .2rem 0; } .misol tbody tr { display: block; padding: .5rem 0; border-bottom: 1px solid var(--chiziq); } .misol thead { display: none; } }
+
+/* ---------- Ish boshlashdan oldin (maslahatlar 4-kartasi) ---------- */
+.tekshir { grid-column: 2 / -1; padding: 1.25rem 1.4rem; background: var(--moviy-och); border-radius: 16px; display: grid; gap: .75rem; }
+.tekshir ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem 1.5rem; }
+.tekshir li { position: relative; padding-left: 1.6rem; font-size: .93rem; }
+.tekshir li::before {
+  content: ""; position: absolute; left: 0; top: .2rem; width: 1rem; height: 1rem; border-radius: 4px; background: var(--moviy);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 80% no-repeat, linear-gradient(#000, #000);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+@media (max-width: 1023px) { .tekshir { grid-column: 1 / -1; } }
+@media (max-width: 560px) { .tekshir ul { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Savollar chap ustuni ---------- */
+.savol-bosh { display: grid; gap: 1.5rem; align-content: start; }
+.savol-cta { display: grid; gap: .7rem; justify-items: start; padding: 1.4rem; background: var(--toq); color: #C9D4DA; border-radius: 16px; }
+.savol-cta h3 { color: #fff; font-family: var(--f-sarlavha); font-weight: 600; font-size: 1.2rem; }
+@media (min-width: 900px) { .savol-bosh { position: sticky; top: calc(var(--tepa) + 1.5rem); } }
+
+/* ---------- Qanday ishlaymiz ---------- */
+.jarayon { margin-top: 1.5rem; display: grid; gap: .9rem; }
+.jarayon ol { display: grid; gap: .75rem; counter-reset: j; }
+.jarayon li { counter-increment: j; display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); column-gap: .9rem; align-items: start; }
+.jarayon li::before {
+  content: counter(j); grid-row: span 2; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 12px;
+  font-family: var(--f-sarlavha); font-weight: 600; color: var(--moviy); background: var(--moviy-och);
+}
+.jarayon b { color: var(--siyoh); }
+.jarayon span { color: var(--matn-2); font-size: .93rem; }
+
+/* ---------- Mahsulot sahifasi: rasm ostidagi yon panel ---------- */
+.mahsulot-chap { position: sticky; top: calc(var(--tepa) + 1.5rem); display: grid; gap: 1.25rem; }
+.mahsulot-chap .mahsulot-rasm { position: static; }
+.mahsulot-yon { display: grid; gap: .9rem; padding: 1.25rem; background: #fff; border: 1px solid var(--chiziq); border-radius: 16px; }
+.mahsulot-yon h2 { font-size: 1.05rem; font-family: var(--f-matn); font-weight: 700; letter-spacing: 0; }
+.joy-royxat { display: flex; flex-wrap: wrap; gap: .45rem; }
+.joy-royxat li { padding: .35rem .75rem; border-radius: 999px; font-size: .88rem; font-weight: 600; }
+.joy-royxat .bor { color: var(--moviy); background: var(--moviy-och); }
+.joy-royxat .bor::before { content: "✓ "; }
+.joy-royxat .yoq { color: #8A949B; background: #F0F2F2; text-decoration: line-through; text-decoration-thickness: 1px; }
+.qoshni-qadam { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.qoshni-qadam a { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: .6rem; align-items: center; padding: .5rem; border: 1px solid var(--chiziq); border-radius: 12px; text-decoration: none; }
+.qoshni-qadam a:hover { border-color: var(--moviy); }
+.qoshni-qadam img { width: 48px; height: 48px; mix-blend-mode: multiply; }
+.qoshni-qadam span { display: grid; font-size: .85rem; font-weight: 650; color: var(--siyoh); line-height: 1.3; }
+.qoshni-qadam small { font-size: .75rem; font-weight: 500; color: var(--matn-2); }
+@media (max-width: 899px) { .mahsulot-chap { position: static; } }
+@media (max-width: 420px) { .qoshni-qadam { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Footer: ustunlar soniga moslashadi ---------- */
+.pastki-ichi { grid-template-columns: minmax(0, 1.2fr) repeat(auto-fit, minmax(150px, 1fr)); }
+@media (max-width: 899px) { .pastki-ichi { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .pastki-ichi { grid-template-columns: minmax(0, 1fr); } }
