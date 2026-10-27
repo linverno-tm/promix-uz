@@ -370,6 +370,74 @@
     });
     tel.addEventListener('focus', () => { if (!tel.value) tel.value = '+998 '; });
     tel.addEventListener('blur', () => { if (tel.value.trim() === '+998') tel.value = ''; });
+    // Hudud: yozganda toʻldiriladigan roʻyxat (ARIA combobox). Fokusda hammasi, yozilsa — mosi.
+    const hudud = $('#f-shahar', forma);
+    const royxat = $('#f-shahar-royxat', forma);
+    const dl = $('#viloyatlar', forma);
+    if (hudud && royxat && dl) {
+      const nomlar = $$('option', dl).map((o) => o.value);
+      dl.remove();
+      hudud.removeAttribute('list');
+      hudud.setAttribute('role', 'combobox');
+      hudud.setAttribute('aria-autocomplete', 'list');
+      hudud.setAttribute('aria-controls', royxat.id);
+      hudud.setAttribute('aria-expanded', 'false');
+      const tozala = (s) => s.toLowerCase().replace(/[ʻʼ'`’‘]/g, '').trim();
+      let faol = -1;
+      let yozildi = false;
+      const variantlar = () => $$('[role="option"]', royxat);
+      const belgila = (i) => {
+        const v = variantlar();
+        faol = v.length ? (i + v.length) % v.length : -1;
+        v.forEach((o, k) => o.setAttribute('aria-selected', k === faol ? 'true' : 'false'));
+        if (faol >= 0) { hudud.setAttribute('aria-activedescendant', v[faol].id); v[faol].scrollIntoView({ block: 'nearest' }); }
+        else hudud.removeAttribute('aria-activedescendant');
+      };
+      const yop = () => {
+        royxat.hidden = true;
+        hudud.setAttribute('aria-expanded', 'false');
+        hudud.removeAttribute('aria-activedescendant');
+        faol = -1;
+      };
+      const och = () => {
+        const s = yozildi ? tozala(hudud.value) : '';
+        // avval nomi shu bilan boshlanganlar, keyin ichida borlar
+        const mos = s ? [...nomlar.filter((n) => tozala(n).startsWith(s)), ...nomlar.filter((n) => !tozala(n).startsWith(s) && tozala(n).includes(s))] : nomlar;
+        if (!mos.length) { yop(); return; }
+        royxat.replaceChildren(...mos.map((n, k) => {
+          const li = document.createElement('li');
+          li.id = `f-shahar-${k}`;
+          li.setAttribute('role', 'option');
+          li.textContent = n;
+          return li;
+        }));
+        royxat.hidden = false;
+        hudud.setAttribute('aria-expanded', 'true');
+        belgila(mos.indexOf(hudud.value) >= 0 ? mos.indexOf(hudud.value) : (yozildi ? 0 : -1));
+      };
+      const tanla = (li) => { hudud.value = li.textContent; yozildi = false; yop(); };
+      hudud.addEventListener('focus', () => { yozildi = false; och(); });
+      hudud.addEventListener('click', () => { if (royxat.hidden) och(); });
+      hudud.addEventListener('input', () => { yozildi = true; och(); });
+      // yozib, roʻyxatdan tanlamay chiqib ketsa — belgilangan mos hudud qoʻyiladi
+      hudud.addEventListener('blur', () => { if (!royxat.hidden && yozildi && faol >= 0 && hudud.value.trim()) hudud.value = variantlar()[faol].textContent; yozildi = false; yop(); });
+      hudud.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (royxat.hidden) { och(); return; }
+          belgila(faol + (e.key === 'ArrowDown' ? 1 : -1));
+        } else if (e.key === 'Enter' && !royxat.hidden && faol >= 0) {
+          e.preventDefault();
+          tanla(variantlar()[faol]);
+        } else if (e.key === 'Escape' && !royxat.hidden) {
+          e.preventDefault();
+          yop();
+        }
+      });
+      // bosilganda fokus maydonda qoladi (blur roʻyxatni yopib qoʻymasin)
+      royxat.addEventListener('pointerdown', (e) => e.preventDefault());
+      royxat.addEventListener('click', (e) => { const li = e.target.closest('[role="option"]'); if (li) tanla(li); });
+    }
     const ariaSinx = (el) => el.setAttribute('aria-invalid', el.matches(':user-invalid') || el.classList.contains('notogri') ? 'true' : 'false');
     $$('input[required]', forma).forEach((el) => {
       el.addEventListener('blur', () => ariaSinx(el));
