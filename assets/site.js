@@ -176,7 +176,7 @@
   }
 
   // ---- Tasvirlar faqat koʻringanda harakatlanadi; harakat cheklangan boʻlsa SVG (SMIL) ham toʻxtaydi ----
-  const tasvirlar = $$('.vz');
+  const tasvirlar = $$('.vz, .jonli');
   if (!harakat.matches) {
     tasvirlar.forEach((v) => v.pauseAnimations && v.pauseAnimations());
   } else if ('IntersectionObserver' in window) {
@@ -189,6 +189,45 @@
     tasvirlar.forEach((v) => io.observe(v));
   } else {
     tasvirlar.forEach((v) => v.classList.add('korindi'));
+  }
+
+  // ---- 3D model: model-viewer va glb faqat ekranga yaqinlashganda; telefonda yengil nusxa ----
+  const modellar = $$('.model-3d');
+  if (modellar.length && 'IntersectionObserver' in window) {
+    const yukla = (mv) => {
+      const kichik = matchMedia('(max-width: 899px)').matches || navigator.connection?.saveData;
+      window.ModelViewerElement = window.ModelViewerElement || {};
+      window.ModelViewerElement.meshoptDecoderLocation = new URL(mv.dataset.meshopt, location.href).href;
+      if (harakat.matches) {
+        mv.setAttribute('auto-rotate', '');
+        mv.setAttribute('auto-rotate-delay', '0');
+        mv.setAttribute('rotation-per-second', '16deg');
+      }
+      mv.setAttribute('src', kichik ? mv.dataset.kichik : mv.dataset.katta);
+      if (!$('script[data-model-viewer]')) {
+        const s = document.createElement('script');
+        s.type = 'module';
+        s.src = mv.dataset.skript;
+        s.dataset.modelViewer = '';
+        document.head.append(s);
+      }
+    };
+    const io3 = new IntersectionObserver((yozuvlar) => yozuvlar.forEach((y) => {
+      if (y.isIntersecting) { io3.unobserve(y.target); yukla(y.target); }
+    }), { rootMargin: '300px 0px' });
+    // ~1 MB skript birinchi chizishga xalal bermasin: sahifa yuklangach, birinchi harakat yoki 2,5 s dan keyin
+    let boshlandi = false;
+    const boshla = () => {
+      if (boshlandi) return;
+      boshlandi = true;
+      ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((h) => removeEventListener(h, boshla));
+      modellar.forEach((m) => io3.observe(m));
+    };
+    const kut = () => {
+      ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((h) => addEventListener(h, boshla, { once: true, passive: true }));
+      setTimeout(boshla, 2500);
+    };
+    if (document.readyState === 'complete') kut(); else addEventListener('load', kut, { once: true });
   }
 
   // ---- Obyekt toʻplamlari ----
