@@ -5,6 +5,18 @@
   const til = document.documentElement.lang;
   const harakat = matchMedia('(prefers-reduced-motion: no-preference)');
 
+  // ---- Yuguruvchi polka: uzluksiz aylanish uchun ikkinchi nusxa (HTML'da bitta, yengil boʻlsin) ----
+  if (harakat.matches) $$('.tasma-qator').forEach((q) => {
+    [...q.children].forEach((li) => {
+      const n = li.cloneNode(true);
+      n.classList.add('tasma-nusxa');
+      n.setAttribute('aria-hidden', 'true');
+      n.querySelector('a').tabIndex = -1;
+      q.append(n);
+    });
+    q.classList.add('ikki');
+  });
+
   // ---- Jonli hero: toʻkilayotgan shpaklyovka (faqat harakat cheklanmagan va trafik tejalmayotgan boʻlsa) ----
   const video = $('.hero2-video');
   if (video && harakat.matches && !(navigator.connection && navigator.connection.saveData)) {
@@ -233,12 +245,25 @@
     const qidiruv = $('#qidiruv');
     const natija = $('#natija');
     const bosh = $('#bosh-natija');
-    const url = new URL(location.href);
-    const boshToifa = url.searchParams.get('toifa');
-    if (boshToifa) {
-      const r = $(`input[name="toifa"][value="${CSS.escape(boshToifa)}"]`);
-      if (r) r.checked = true;
-    }
+    // filtr holati URL'da: Orqaga bosilganda yoki havola ulashilganda shu tanlov tiklanadi
+    const urldanOl = () => {
+      const q = new URL(location.href).searchParams;
+      const r = $(`input[name="toifa"][value="${CSS.escape(q.get('toifa') || '')}"]`);
+      (r || $('input[name="toifa"][value=""]')).checked = true;
+      const joylar = (q.get('joy') || '').split(',');
+      $$('input[name="joy"]').forEach((c) => { c.checked = joylar.includes(c.value); });
+      qidiruv.value = q.get('q') || '';
+    };
+    const urlgaYoz = (yangi) => {
+      const u = new URL(location.href);
+      const toifa = $('input[name="toifa"]:checked')?.value || '';
+      const joylar = $$('input[name="joy"]:checked').map((c) => c.value).join(',');
+      const q = qidiruv.value.trim();
+      for (const [k, v] of [['toifa', toifa], ['joy', joylar], ['q', q]]) v ? u.searchParams.set(k, v) : u.searchParams.delete(k);
+      if (u.href === location.href) return;
+      if (yangi) history.pushState(null, '', u); else history.replaceState(null, '', u);
+    };
+    urldanOl();
     const sozla = () => {
       const toifa = $('input[name="toifa"]:checked')?.value || '';
       const joylar = $$('input[name="joy"]:checked').map((c) => c.value);
@@ -254,20 +279,19 @@
       });
       natija.textContent = natija.dataset.shablon.replace('{n}', n);
       bosh.hidden = n > 0;
-      const u = new URL(location.href);
-      toifa ? u.searchParams.set('toifa', toifa) : u.searchParams.delete('toifa');
-      history.replaceState(null, '', u);
     };
     // filtr oʻzgarganda kartalar yangi joyiga silliq oʻtadi
     kartalar.forEach((k, i) => { k.style.viewTransitionName = `karta-${i}`; });
     const silliq = () => (document.startViewTransition && harakat.matches ? document.startViewTransition(sozla) : sozla());
-    qidiruv.addEventListener('input', sozla);
-    $$('input[name="toifa"], input[name="joy"]').forEach((i) => i.addEventListener('change', silliq));
+    qidiruv.addEventListener('input', () => { sozla(); urlgaYoz(false); });
+    $$('input[name="toifa"], input[name="joy"]').forEach((i) => i.addEventListener('change', () => { silliq(); urlgaYoz(true); }));
+    addEventListener('popstate', () => { urldanOl(); silliq(); });
     $('#filtr-tozala').addEventListener('click', () => {
       qidiruv.value = '';
       $('input[name="toifa"][value=""]').checked = true;
       $$('input[name="joy"]').forEach((c) => { c.checked = false; });
       sozla();
+      urlgaYoz(true);
       qidiruv.focus();
     });
     sozla();
