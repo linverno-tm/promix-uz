@@ -67,6 +67,21 @@
     io.observe(el);
   });
 
+  // ---- Devor kesimi (header ostida): har qatlam-boʻlim ekranga kirganda oʻz boʻlagi toʻladi ----
+  const olchov = $('.qatlam-olchov');
+  if (olchov && harakat.matches && 'IntersectionObserver' in window) {
+    const bolaklar = $$('i', olchov);
+    const qatlamlar = ['.qv-grunt', '.qv-h', '.qv-mato', '.qv-f', '.qv-boyoq'].map((s) => $(s));
+    olchov.classList.add('jonli-olchov');
+    const io = new IntersectionObserver((yozuvlar) => yozuvlar.forEach((y) => {
+      const i = qatlamlar.indexOf(y.target) + 1;
+      // pastga aylantirganda qatlam qoʻshiladi, yuqoriga qaytganda olinadi
+      if (y.isIntersecting) bolaklar[i].classList.add('tol');
+      else if (y.boundingClientRect.top > 0) bolaklar[i].classList.remove('tol');
+    }), { rootMargin: '0px 0px -35% 0px' });
+    qatlamlar.forEach((q) => q && io.observe(q));
+  }
+
   // ---- Til almashganda oʻsha joyda qolish ----
   // Ikkala tildagi sahifalar bir xil shablondan: bloklar tartibi bir xil, shuning uchun
   // «nechanchi blok va uning qaysi qismi» saqlanadi (matn uzunligi farq qilsa ham joy siljimaydi).
@@ -164,7 +179,7 @@
   const ariza = $('#ariza');
   // hero tugmalari yoki formaning oʻzi koʻrinib tursa — bir ekranda ikki marta chiqmasin
   // «Devor qanday quriladi» sahnasi ham — u ekranni toʻliq egallaydi
-  const kuzat = [ariza, $('.hero2 .tugmalar'), $('.mahsulot-matn .tugmalar'), $('.ish')].filter(Boolean);
+  const kuzat = [ariza, $('.qh-tugmalar'), $('.mahsulot-matn .tugmalar'), $('.ish')].filter(Boolean);
   if (pastki && kuzat.length && 'IntersectionObserver' in window) {
     const korinadi = new Set();
     pastki.classList.add('yashir');
