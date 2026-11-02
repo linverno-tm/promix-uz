@@ -5,6 +5,74 @@
   const til = document.documentElement.lang;
   const harakat = matchMedia('(prefers-reduced-motion: no-preference)');
 
+  // ---- Yuklanish holati: rasm / video / 3D kelguncha idish ustida nur va qizil chiziq (CSS: .yukl, site-devor2.css) ----
+  // window.yukl(idish, {chiziq}) → { foiz(0..1), tayyor() }. Foiz nomaʼlum boʻlsa chiziq yuguradi; tayyor() — qatlam soʻnib oʻchadi.
+  // chiziq: true — surat ustida nur yoʻq, faqat chiziq (hero: LCP surati tiniq tursin).
+  window.yukl = (idish, o = {}) => {
+    if (!idish) return { foiz() {}, tayyor() {} };
+    if (idish._yukl && !idish._yukl.bitdi) return idish._yukl;
+    const q = document.createElement('span');
+    q.className = 'yukl-qatlam';
+    q.setAttribute('aria-hidden', 'true');
+    q.append(document.createElement('i'));
+    if (getComputedStyle(idish).position === 'static') idish.classList.add('yukl-nisbiy');
+    idish.classList.remove('yukl-foizli');
+    idish.style.removeProperty('--p');
+    idish.classList.add('yukl');
+    idish.classList.toggle('yukl-chiziq', !!o.chiziq);
+    idish.append(q);
+    const h = {
+      foiz(p) {
+        if (h.bitdi || !(p >= 0)) return;
+        idish.classList.add('yukl-foizli');
+        idish.style.setProperty('--p', Math.min(1, p).toFixed(3));
+      },
+      tayyor() {
+        if (h.bitdi) return;
+        h.bitdi = true;
+        q.classList.add('bitdi');
+        setTimeout(() => {
+          q.remove();
+          if (idish._yukl !== h) return;
+          idish.classList.remove('yukl', 'yukl-foizli', 'yukl-chiziq');
+          idish.style.removeProperty('--p');
+          idish._yukl = null;
+        }, 500);
+      },
+    };
+    idish._yukl = h;
+    return h;
+  };
+
+  // Kech yuklanadigan rasmlar (sertifikat, polka, katalog…): ekranga yaqinlashganda hali kelmagan boʻlsa — holat, kelgach silliq chiqadi.
+  // 3D posteri (pastda oʻzi boshqariladi) va kichik ikonkalar (< 96 px) bundan tashqari.
+  (() => {
+    const r = $$('main img[loading="lazy"]').filter((i) => !i.closest('.model-3d') && !i.complete);
+    if (!r.length || !('IntersectionObserver' in window)) return;
+    const idishi = (i) => {
+      let p = i.parentElement;
+      if (p.tagName === 'PICTURE') p = p.parentElement;
+      while (p && getComputedStyle(p).display === 'inline') p = p.parentElement;
+      return p;
+    };
+    const boshla = (i) => {
+      if (i.complete && i.naturalWidth) return;
+      if (i.getBoundingClientRect().width < 96) return;
+      const idish = idishi(i);
+      if (!idish || idish._yukl) return;
+      const h = window.yukl(idish);
+      i.classList.add('yukl-img');
+      const bitdi = () => { i.classList.add('yukl-keldi'); h.tayyor(); };
+      i.addEventListener('load', bitdi, { once: true });
+      i.addEventListener('error', bitdi, { once: true });
+      if (i.complete && i.naturalWidth) bitdi();
+    };
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { io.unobserve(e.target); boshla(e.target); }
+    }), { rootMargin: '300px 0px' });
+    r.forEach((i) => io.observe(i));
+  })();
+
   // ---- Yuguruvchi polka: uzluksiz aylanish uchun ikkinchi nusxa (HTML'da bitta, yengil boʻlsin) ----
   if (harakat.matches) $$('.tasma-qator').forEach((q) => {
     [...q.children].forEach((li) => {
@@ -28,10 +96,19 @@
       tugma.textContent = ijro ? tugma.dataset.pauza : tugma.dataset.davom;
       tugma.setAttribute('aria-pressed', String(!ijro));
     };
+    // AV1 WebM (kichikroq) — brauzer qoʻllasa; boʻlmasa H.264 MP4
+    const av1 = video.dataset.kichikAv1 && video.canPlayType('video/webm; codecs="av01.0.05M.08"') === 'probably';
     const boshla = () => {
       if (video.src) return;
-      video.src = telefon ? video.dataset.kichik : video.dataset.katta;
-      video.play().then(() => { tugma.hidden = false; oyna(true); }).catch(() => {});
+      // yuklanish holati: surat ustida faqat qizil chiziq (buffered/duration), `playing` boʻlgach yoʻqoladi
+      const h = window.yukl(video.parentElement, { chiziq: true });
+      const foiz = () => { try { if (video.duration > 0 && video.buffered.length) h.foiz(video.buffered.end(video.buffered.length - 1) / video.duration); } catch (e) { /* hali yoʻq */ } };
+      video.addEventListener('progress', foiz);
+      video.addEventListener('loadedmetadata', foiz);
+      video.addEventListener('playing', () => { foiz(); h.tayyor(); }, { once: true });
+      video.addEventListener('error', h.tayyor, { once: true });
+      video.src = av1 ? (telefon ? video.dataset.kichikAv1 : video.dataset.kattaAv1) : (telefon ? video.dataset.kichik : video.dataset.katta);
+      video.play().then(() => { tugma.hidden = false; oyna(true); }).catch(() => h.tayyor());
     };
     // telefonda video birinchi teginish/aylantirishda boshlanadi — sahifa tezroq ochiladi (LCP surat boʻlib qoladi)
     if (telefon) ['pointerdown', 'scroll', 'keydown', 'touchstart'].forEach((h) => addEventListener(h, boshla, { once: true, passive: true }));
@@ -218,6 +295,11 @@
         mv.setAttribute('auto-rotate-delay', '0');
         mv.setAttribute('rotation-per-second', '16deg');
       }
+      // poster darhol; glb kelguncha nur + foizli chiziq (model-viewer «progress» hodisasi)
+      const h = window.yukl(mv.parentElement);
+      mv.addEventListener('progress', (e) => { h.foiz(e.detail.totalProgress); if (e.detail.totalProgress >= 1) h.tayyor(); });
+      mv.addEventListener('load', h.tayyor, { once: true });
+      mv.addEventListener('error', h.tayyor, { once: true });
       mv.setAttribute('src', kichik ? mv.dataset.kichik : mv.dataset.katta);
       if (!$('script[data-model-viewer]')) {
         const s = document.createElement('script');
